@@ -1,11 +1,8 @@
 from app import db
 from app.models import BranchRating
 from app.models.user import User
-<<<<<<< HEAD
-=======
 from app.models.status import Status
 from datetime import datetime, timedelta
->>>>>>> develop
 
 class BranchRatingService:
     @staticmethod
@@ -19,35 +16,24 @@ class BranchRatingService:
         existing_rating = BranchRatingService.get_rating_by_branch_and_tourist(branch_id, user_id)
         if existing_rating:
             return None  # Ya existe una valoración para esta combinación
-<<<<<<< HEAD
-
-        new_rating = BranchRating(branch_id=branch_id, user_id=user_id, rating=rating, comment=comment)
-=======
         
         pending_status = Status.query.filter_by(name="pending").first()
         if not pending_status:
             raise ValueError("El estado 'Pending' no existe en la tabla statuses.")
 
         new_rating = BranchRating(branch_id=branch_id, user_id=user_id, rating=rating, comment=comment, status_id=pending_status.id)
->>>>>>> develop
         db.session.add(new_rating)
         db.session.commit()
         return new_rating
 
     @staticmethod
-<<<<<<< HEAD
-    def update_rating(rating_id, rating, comment):
-=======
     def update_rating(rating_id, rating, comment, status_id=None):
->>>>>>> develop
         try:
             # Busca la calificación por su ID
             rating_record = BranchRating.query.get(rating_id)
             if rating_record:
                 rating_record.rating = rating
                 rating_record.comment = comment
-<<<<<<< HEAD
-=======
                 
                 if status_id:
                     status = Status.query.get(status_id)
@@ -55,7 +41,6 @@ class BranchRatingService:
                         raise ValueError(f"El estado con ID {status_id} no existe.")
                     rating_record.status_id = status_id
                     
->>>>>>> develop
                 db.session.commit()
                 return rating_record
             return None
@@ -76,19 +61,6 @@ class BranchRatingService:
         except Exception as e:
             db.session.rollback()
             raise e
-<<<<<<< HEAD
-    @staticmethod
-    def get_all_ratings_for_branch(branch_id):
-        return db.session.query(BranchRating, User.first_name).join(User, BranchRating.user_id == User.user_id).filter(BranchRating.branch_id == branch_id).all()
-
-    @staticmethod
-    def get_average_rating_for_branch(branch_id):
-        ratings = BranchRating.query.filter_by(branch_id=branch_id).all()
-        if not ratings:
-            return 0
-        total_rating = sum(rating.rating for rating in ratings)
-        return total_rating / len(ratings)
-=======
     
     @staticmethod
     def soft_delete_rating(rating_id):
@@ -206,4 +178,3 @@ class BranchRatingService:
         ).all()
         
         return [rating.serialize() for rating in ratings]
->>>>>>> develop

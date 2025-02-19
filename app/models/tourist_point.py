@@ -9,11 +9,7 @@ class TouristPoint(db.Model):
     latitude = db.Column(db.Float, nullable=False)
     longitude = db.Column(db.Float, nullable=False)
     images = db.relationship('Image', backref='tourist_point', lazy=True)
-<<<<<<< HEAD
-    ratings = db.relationship('Rating', backref='tourist_point', lazy=True)
-=======
     ratings = db.relationship('Rating', back_populates='tourist_point', lazy=True)
->>>>>>> develop
 
     status_id = db.Column(db.Integer, db.ForeignKey('statuses.id'), nullable=False)
     status = db.relationship('Status', backref='tourist_points')
@@ -53,11 +49,6 @@ class Rating(db.Model):
     rating = db.Column(db.Integer, nullable=False)
     comment = db.Column(db.String(1000))
     tourist_point_id = db.Column(db.Integer, db.ForeignKey('tourist_points.id'), nullable=False)
-<<<<<<< HEAD
-    tourist_id = db.Column(db.Integer, db.ForeignKey('tourists.user_id'), nullable=False)
-    created_at = db.Column(db.DateTime, default=db.func.current_timestamp(), nullable=True)
-    
-=======
     tourist_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp(), nullable=True)
     
@@ -67,17 +58,10 @@ class Rating(db.Model):
     status_id = db.Column(db.Integer, db.ForeignKey('statuses.id'), nullable=True)
     status = db.relationship('Status', backref='ratings')
     
->>>>>>> develop
     def serialize(self):
         return {
             'id': self.id,
             'tourist_point_id': self.tourist_point_id,
-<<<<<<< HEAD
-            'tourist_id': self.tourist_id,
-            'rating': self.rating,
-            'comment': self.comment,
-            'created_at': self.created_at.isoformat()  # Formatear la fecha en ISO 8601
-=======
             'tourist_point_title': self.tourist_point.title if self.tourist_point else None,
             'tourist_id': self.tourist_id,
             'tourist_first_name': self.tourist.first_name if self.tourist else None, 
@@ -86,7 +70,6 @@ class Rating(db.Model):
             'comment': self.comment,
             'created_at': self.created_at.isoformat() if self.created_at else None,
             'status': self.status.serialize() if self.status else None,
->>>>>>> develop
         }
 
     __table_args__ = (

@@ -2,16 +2,11 @@ from app import db
 from app.models.promotion import Promotion, PromotionImage
 from app.models.category import Category
 from app.common.image_manager import ImageManager
-<<<<<<< HEAD
-from app.models import Promotion, Branch
-from config import Config
-=======
 from app.models import Promotion, Branch, Status 
 from config import Config
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import joinedload
 from time import sleep
->>>>>>> develop
 
 class PromotionService:
     @staticmethod
@@ -55,13 +50,6 @@ class PromotionService:
         # Procesar y subir cada imagen
         for image_data in images:
             # Generar un nombre de archivo único para cada imagen
-<<<<<<< HEAD
-            filename = f"promotions/{new_promotion.promotion_id}/{image_data['filename']}"
-            
-            # Subir la imagen y obtener la URL pública
-            image_url = image_manager.upload_image(image_data['data'], filename)
-            
-=======
             
             filename = f"promotions/{new_promotion.promotion_id}/{image_data['filename']}"
             
@@ -69,7 +57,6 @@ class PromotionService:
             category='promotions'
             
             image_url = image_manager.upload_image(image_data['data'], filename, category)
->>>>>>> develop
             # Crear una instancia de PromotionImage y asociarla a la promoción
             new_image = PromotionImage(promotion=new_promotion, image_path=image_url)
             db.session.add(new_image)
@@ -123,12 +110,8 @@ class PromotionService:
                 # Procesar y subir cada nueva imagen
                 for image_data in images:
                     filename = f"promotions/{promotion.promotion_id}/{image_data['filename']}"
-<<<<<<< HEAD
-                    image_url = image_manager.upload_image(image_data['data'], filename)
-=======
                     category='promotions'
                     image_url = image_manager.upload_image(image_data['data'], filename, category)
->>>>>>> develop
                     new_image = PromotionImage(promotion_id=promotion_id, image_path=image_url)
                     db.session.add(new_image)
             
@@ -158,19 +141,6 @@ class PromotionService:
         attempt = 0
         while attempt < retries:
             try:
-<<<<<<< HEAD
-                # Intentar obtener todas las promociones
-                return Promotion.query.all()
-            except OperationalError as e:
-                attempt += 1
-                print(f"Error de conexión: {e}. Reintentando {attempt}/{retries}...")
-                sleep(delay)  # Esperar un poco antes de reintentar
-        # Si después de varios intentos no se logra, lanzar la excepción
-        raise OperationalError(f"Fallo después de {retries} intentos")
-    @staticmethod
-    def delete_promotion_images(image_ids):
-        # Obtener todas las imágenes por sus IDs
-=======
                 # Filtrar promociones donde el estado no sea "deleted"
                 return (
                     Promotion.query.join(Status)
@@ -204,25 +174,10 @@ class PromotionService:
     
     @staticmethod
     def delete_promotion_images(image_ids):
->>>>>>> develop
         images = PromotionImage.query.filter(PromotionImage.image_id.in_(image_ids)).all()
         if images:
             image_manager = ImageManager()
             for image in images:
-<<<<<<< HEAD
-                # Intentar borrar la imagen de Google Cloud Storage
-                try:
-                    filename = image.image_path
-                    relative_path = filename.split(f"{Config.GCS_BUCKET_NAME}/")[1]
-                    image_manager.delete_image(relative_path)
-                except Exception as e:
-                    print(f"Error al eliminar la imagen {filename} de la nube: {e}")
-                
-                # Eliminar la imagen de la base de datos
-                db.session.delete(image)
-            
-            # Guardar los cambios en la base de datos
-=======
                 try:
                     filename = image.image_path
 
@@ -237,16 +192,12 @@ class PromotionService:
                     print(f"Error al eliminar la imagen {filename} del sistema: {e}")
                 db.session.delete(image)
 
->>>>>>> develop
             db.session.commit()
             return True
         return False
 
     @staticmethod
     def get_promotions_by_partner(partner_id):
-<<<<<<< HEAD
-        return Promotion.query.join(Branch).filter(Branch.partner_id == partner_id).all()
-=======
         return (
         Promotion.query
         .join(Branch)
@@ -302,4 +253,3 @@ class PromotionService:
     #         db.session.commit()
     #         return True
     #     return False
->>>>>>> develop

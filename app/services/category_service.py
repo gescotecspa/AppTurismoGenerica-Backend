@@ -8,11 +8,7 @@ class CategoryService:
 
     @staticmethod
     def get_all_categories():
-<<<<<<< HEAD
-        return Category.query.all()
-=======
         return Category.query.order_by(Category.name.asc()).all()
->>>>>>> develop
 
     @staticmethod
     def create_category(name):

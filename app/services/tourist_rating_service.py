@@ -1,10 +1,7 @@
 from app import db
 from app.models import TouristRating
-<<<<<<< HEAD
-=======
 from app.models.status import Status
 from datetime import datetime, timedelta
->>>>>>> develop
 
 class TouristRatingService:
     @staticmethod
@@ -12,15 +9,6 @@ class TouristRatingService:
         return TouristRating.query.filter_by(tourist_id=tourist_id, branch_id=branch_id).first()
 
     @staticmethod
-<<<<<<< HEAD
-    def create_rating(tourist_id, branch_id, rating, comment=None):
-        existing_rating = TouristRatingService.get_rating_by_tourist_and_branch(tourist_id, branch_id)
-        if existing_rating:
-            # Devolver None o lanzar una excepción si ya existe la valoración
-            return None, 'Rating already exists for this branch and tourist'
-
-        new_rating = TouristRating(tourist_id=tourist_id, branch_id=branch_id, rating=rating, comment=comment)
-=======
     def create_rating(tourist_id, branch_id, rating, comment=None, status_id=None):
         # Verificar si ya existe una valoración para el turista y la sucursal
         existing_rating = TouristRatingService.get_rating_by_tourist_and_branch(tourist_id, branch_id)
@@ -33,19 +21,11 @@ class TouristRatingService:
 
         # Crear la nueva valoración
         new_rating = TouristRating(tourist_id=tourist_id, branch_id=branch_id, rating=rating, comment=comment, status_id=status_id, user_id=tourist_id)
->>>>>>> develop
         db.session.add(new_rating)
         db.session.commit()
         return new_rating, None
     
     @staticmethod
-<<<<<<< HEAD
-    def update_rating(rating_id, rating, comment=None):
-        existing_rating = TouristRating.query.get(rating_id)
-        if existing_rating:
-            existing_rating.rating = rating
-            existing_rating.comment = comment
-=======
     def update_rating(rating_id, rating=None, comment=None, status_id=None):
         existing_rating = TouristRating.query.get(rating_id)
         if existing_rating:
@@ -57,7 +37,6 @@ class TouristRatingService:
             if status_id is not None:
                 existing_rating.status_id = status_id
 
->>>>>>> develop
             db.session.commit()
             return existing_rating
         return None
@@ -66,30 +45,16 @@ class TouristRatingService:
     def delete_rating(rating_id):
         existing_rating = TouristRating.query.get(rating_id)
         if existing_rating:
-<<<<<<< HEAD
-            db.session.delete(existing_rating)
-=======
             deleted_status = Status.query.filter_by(name="deleted").first()
             existing_rating.status_id = deleted_status.id
             existing_rating.deleted_at = db.func.current_timestamp()
 
->>>>>>> develop
             db.session.commit()
             return existing_rating
         return None
 
     @staticmethod
     def get_all_ratings_for_tourist(tourist_id):
-<<<<<<< HEAD
-        return TouristRating.query.filter_by(tourist_id=tourist_id).all()
-
-    @staticmethod
-    def get_average_rating_for_tourist(tourist_id):
-        ratings = TouristRating.query.filter_by(tourist_id=tourist_id).all()
-        if ratings:
-            return sum(r.rating for r in ratings) / len(ratings)
-        return 0
-=======
         # Buscar el estado 'deleted'
         deleted_status = Status.query.filter_by(name="deleted").first()
         rejected_status = Status.query.filter_by(name="rejected").first()
@@ -176,4 +141,3 @@ class TouristRatingService:
         ).all()
         
         return [rating.serialize() for rating in ratings]
->>>>>>> develop

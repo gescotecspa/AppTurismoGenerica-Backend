@@ -10,10 +10,7 @@ import uuid
 from app.models.status import Status
 from datetime import datetime
 from app.models.terms_and_conditions import TermsAndConditions
-<<<<<<< HEAD
-=======
 from sqlalchemy import func
->>>>>>> develop
 
 class UserService:
     @staticmethod
@@ -21,17 +18,12 @@ class UserService:
         return User.query.get(user_id)
 
     @staticmethod
-<<<<<<< HEAD
-    def get_user_by_email(email):
-        return User.query.filter_by(email=email).first()
-=======
     def get_user_by_email(email: str):
         # Busca el usuario por email y que el status no sea "deleted"
         return User.query.join(User.status).filter(
             func.lower(User.email) == func.lower(email),
             User.status.has(name='deleted') == False
         ).first()
->>>>>>> develop
 
     @staticmethod
     def get_all_users():
@@ -40,11 +32,6 @@ class UserService:
     @staticmethod
     def create_user(password, first_name, last_name, country, email, status_id, city=None, birth_date=None, phone_number=None, gender=None, subscribed_to_newsletter=None, image_data=None, accept_terms=False):
         existing_user = UserService.get_user_by_email(email)
-<<<<<<< HEAD
-        if existing_user:
-            raise ValueError("A user with that email already exists.")
-
-=======
         print(existing_user)
         if existing_user and existing_user.status.name != 'deleted':
             raise ValueError("A user with that email already exists.")
@@ -52,7 +39,6 @@ class UserService:
         if not accept_terms:
             raise ValueError("Debe aceptar los términos y condiciones.")
 
->>>>>>> develop
         hashed_password = generate_password_hash(password)
         
         # Manejo de la imagen con ImageManager
@@ -60,12 +46,8 @@ class UserService:
         if image_data:
             image_manager = ImageManager()
             filename = f"users/{email}/profile_image.png"
-<<<<<<< HEAD
-            image_url = image_manager.upload_image(image_data, filename)
-=======
             category = 'users'
             image_url = image_manager.upload_image(image_data, filename, category)
->>>>>>> develop
         status = Status.query.get(status_id)
         if not status:
             raise ValueError("Invalid status ID provided.")
@@ -100,11 +82,7 @@ class UserService:
             pdf_filename = f"Credential_{first_name}_{last_name}.pdf"
             
             # Enviar correo electrónico de bienvenida usando una plantilla HTML
-<<<<<<< HEAD
-            subject = "Bienvenido a nuestra aplicación! CCDT Cobquecura"
-=======
             subject = "Bienvenido a nuestra aplicación! KupzillApp"
->>>>>>> develop
             recipients = [email]
             html_body = render_template('email/welcome_email.html', email=email, first_name=first_name)
             send_email(subject, recipients, html_body, pdf_buffer, pdf_filename)
@@ -125,12 +103,8 @@ class UserService:
                     image_manager = ImageManager()
                     unique_id = uuid.uuid4().hex
                     filename = f"users/{user.email}/profile_image_{unique_id}.png"
-<<<<<<< HEAD
-                    image_url = image_manager.upload_image(image_data, filename)
-=======
                     category = 'users'
                     image_url = image_manager.upload_image(image_data, filename, category)
->>>>>>> develop
                     user.image_url = image_url
             
             # Manejo de la actualización de la contraseña
@@ -168,11 +142,7 @@ class UserService:
     @staticmethod
     def create_user_partner(password, first_name, last_name, country, email, status_id, city=None, birth_date=None, phone_number=None, gender=None, subscribed_to_newsletter=None):
         existing_user = UserService.get_user_by_email(email)
-<<<<<<< HEAD
-        if existing_user:
-=======
         if existing_user and existing_user.status.name != 'deleted':
->>>>>>> develop
             raise ValueError("A user with that email already exists.")
 
         hashed_password = generate_password_hash(password)
@@ -207,11 +177,7 @@ class UserService:
             # pdf_filename = f"Credential_{first_name}_{last_name}.pdf"
             
             # Enviar correo electrónico de bienvenida usando una plantilla HTML
-<<<<<<< HEAD
-            subject = "Bienvenido a nuestra aplicación! CCDT Cobquecura"
-=======
             subject = "Bienvenido a nuestra aplicación! KuplizzApp"
->>>>>>> develop
             recipients = [email]
             html_body = render_template('email/welcome_email_partner.html', email=email, first_name=first_name, password=password )
             send_email(subject, recipients, html_body)

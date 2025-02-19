@@ -1,13 +1,9 @@
 from app import db
 from app.models.branch import Branch
-<<<<<<< HEAD
-from ..common.image_manager import ImageManager
-=======
 from app.models.status import Status
 from ..common.image_manager import ImageManager
 from datetime import datetime
 from app.services.promotion_service import PromotionService
->>>>>>> develop
 
 class BranchService:
     @staticmethod
@@ -19,17 +15,11 @@ class BranchService:
         # Manejo de la imagen con ImageManager
         image_url = None
         if image_data:
-<<<<<<< HEAD
-            image_manager = ImageManager()
-            filename = f"branches/{name.replace(' ', '_')}_image.png"
-            image_url = image_manager.upload_image(image_data, filename)
-=======
             timestamp = datetime.utcnow().strftime("%Y%m%d%H%M%S")
             image_manager = ImageManager()
             filename = f"branches/{partner_id}/{name.replace(' ', '_')}_image_{timestamp}.png"  # Cambiar aquí
             category = 'branches'
             image_url = image_manager.upload_image(image_data, filename, category)
->>>>>>> develop
 
         new_branch = Branch(
             partner_id=partner_id,
@@ -49,13 +39,6 @@ class BranchService:
     def update_branch(branch_id, partner_id=None, name=None, description=None, address=None, latitude=None, longitude=None, status_id=None, image_data=None):
         branch = BranchService.get_branch_by_id(branch_id)
         if branch:
-<<<<<<< HEAD
-            # Manejo de la imagen con ImageManager en la actualización
-            if image_data:
-                image_manager = ImageManager()
-                filename = f"branches/{branch.name.replace(' ', '_')}_image.png"
-                image_url = image_manager.upload_image(image_data, filename)
-=======
             if partner_id is None:
                 partner_id = branch.partner_id
             # Manejo de la imagen con ImageManager en la actualización
@@ -65,7 +48,6 @@ class BranchService:
                 filename = f"branches/{partner_id}/{name.replace(' ', '_')}_image_{timestamp}.png"
                 category = 'branches'
                 image_url = image_manager.upload_image(image_data, filename, category)
->>>>>>> develop
                 branch.image_url = image_url
 
             if partner_id is not None:
@@ -81,9 +63,6 @@ class BranchService:
             if longitude is not None:
                 branch.longitude = longitude
             if status_id is not None:
-<<<<<<< HEAD
-                branch.status_id = status_id  # Asegúrate de que status_id es un entero
-=======
                 # Verificar si el estado cambió
                 if branch.status_id != status_id:
                     # Buscar los estados 'inactive' y 'active'
@@ -116,7 +95,6 @@ class BranchService:
 
                     # Actualizar el estado de la sucursal
                     branch.status_id = status_id
->>>>>>> develop
 
             db.session.commit()
         return branch
@@ -132,13 +110,6 @@ class BranchService:
 
     @staticmethod
     def get_all_branches():
-<<<<<<< HEAD
-        return Branch.query.all()
-
-    @staticmethod
-    def get_branches_by_partner_id(partner_id):
-        return Branch.query.filter_by(partner_id=partner_id).all()
-=======
         return (
             Branch.query.join(Status)
             .filter(Status.name == 'active')
@@ -156,4 +127,3 @@ class BranchService:
         .order_by(Branch.name.asc())
         .all()
     )
->>>>>>> develop

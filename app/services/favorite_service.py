@@ -11,10 +11,6 @@ class FavoriteService:
         db.session.commit()
         return favorite
 
-<<<<<<< HEAD
-=======
-
->>>>>>> develop
     @staticmethod
     def remove_favorite(user_id, promotion_id):
         favorite = Favorite.query.filter_by(user_id=user_id, promotion_id=promotion_id).first()
