@@ -21,6 +21,8 @@ class Branch(db.Model):
     status = db.relationship('Status') 
 
     ratings = db.relationship('BranchRating', back_populates='branch', lazy=True)
+    country_id = db.Column(db.Integer, db.ForeignKey('countries.id'), nullable=False)
+    city_id = db.Column(db.Integer, db.ForeignKey('cities.id'), nullable=False)
     
     def average_rating(self):
         # Calcular el promedio de las calificaciones de esta sucursal
