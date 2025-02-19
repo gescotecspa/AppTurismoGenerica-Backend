@@ -112,4 +112,11 @@ venv
 .venv
 __pycache__
 app/__pycache__
+<<<<<<< HEAD
 app/api/__pycache__
+=======
+app/api/__pycache__
+
+__pycache__/
+/upload_image/
+>>>>>>> develop

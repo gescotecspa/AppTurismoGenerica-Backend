@@ -7,7 +7,10 @@ from app.models.tourist import Tourist
 from app.models.partner import Partner
 from app.models.branch import Branch
 from app.models.favorite import Favorite
+<<<<<<< HEAD
 from app.models.tourist_point import TouristPoint, Image, Rating
+=======
+>>>>>>> develop
 from app.models.branch_rating import BranchRating
 from app.models.tourist_rating import TouristRating
 from app.models.country import Country
@@ -17,6 +20,11 @@ from app.models.role import Role
 from app.models.status import Status
 from app.models.promotion_consumed import PromotionConsumed
 from app.models.terms_and_conditions import TermsAndConditions 
+<<<<<<< HEAD
+=======
+from app.models.city import City
+from app.models.tourist_point import TouristPoint, Image, Rating
+>>>>>>> develop
 # Importa aquí otros modelos a medida que los crees
 
 # Si necesitas inicializar algo específicamente para los modelos, puedes hacerlo aquí.

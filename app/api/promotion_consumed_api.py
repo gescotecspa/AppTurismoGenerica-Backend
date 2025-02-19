@@ -1,18 +1,32 @@
 from flask import Blueprint, request, jsonify
 from flask_restful import Api, Resource
 from app.services.promotion_consumed_service import PromotionConsumedService
+<<<<<<< HEAD
+=======
+from app.auth.auth import token_required
+>>>>>>> develop
 
 promotion_consumed_api_blueprint = Blueprint('promotion_consumed_api', __name__)
 api = Api(promotion_consumed_api_blueprint)
 
 class PromotionConsumedResource(Resource):
+<<<<<<< HEAD
     def get(self, id):
+=======
+    @token_required
+    def get(self, current_user, id):
+>>>>>>> develop
         promotion_consumed = PromotionConsumedService.get_promotion_consumed_by_id(id)
         if promotion_consumed:
             return jsonify(promotion_consumed.serialize())
         return {'message': 'PromotionConsumed not found'}, 404
 
+<<<<<<< HEAD
     def put(self, id):
+=======
+    @token_required
+    def put(self, current_user, id):
+>>>>>>> develop
         data = request.get_json()
         try:
             # Intentar actualizar la promoción consumida
@@ -32,17 +46,32 @@ class PromotionConsumedResource(Resource):
             response.status_code = 500
             return response
 
+<<<<<<< HEAD
     def delete(self, id):
+=======
+    @token_required
+    def delete(self, current_user, id):
+>>>>>>> develop
         if PromotionConsumedService.delete_promotion_consumed(id):
             return {'message': 'PromotionConsumed deleted'}, 200
         return {'message': 'PromotionConsumed not found'}, 404
 
 class PromotionConsumedListResource(Resource):
+<<<<<<< HEAD
     def get(self):
         promotion_consumeds = PromotionConsumedService.get_all_promotion_consumeds()
         return jsonify([pc.serialize() for pc in promotion_consumeds])
 
     def post(self):
+=======
+    @token_required
+    def get(self, current_user):
+        promotion_consumeds = PromotionConsumedService.get_all_promotion_consumeds()
+        return jsonify([pc.serialize() for pc in promotion_consumeds])
+
+    @token_required 
+    def post(self, current_user):
+>>>>>>> develop
         data = request.get_json()
         try:
             promotion_consumed = PromotionConsumedService.create_promotion_consumed(data)
@@ -59,7 +88,12 @@ class PromotionConsumedListResource(Resource):
             return response
         
 class PromotionConsumedByPartnerResource(Resource):
+<<<<<<< HEAD
     def get(self, partner_id):
+=======
+    @token_required
+    def get(self, current_user, partner_id):
+>>>>>>> develop
         # Obtén las promociones consumidas filtradas por partner_id
         promotions_consumed = PromotionConsumedService.get_promotion_consumeds_by_partner(partner_id)
 

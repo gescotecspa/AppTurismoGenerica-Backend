@@ -1,6 +1,11 @@
 from app import db
 from .favorite import Favorite
+<<<<<<< HEAD
 from .partner import Partner 
+=======
+from .partner import Partner
+from .branch import Branch
+>>>>>>> develop
 
 promotion_categories = db.Table('promotion_categories',
     db.Column('promotion_id', db.Integer, db.ForeignKey('promotions.promotion_id'), primary_key=True),
@@ -29,12 +34,26 @@ class Promotion(db.Model):
     status = db.relationship('Status', backref=db.backref('promotions', lazy=True)) 
     # estado activa en caso de cargarse un estado
     
+<<<<<<< HEAD
     def serialize(self, include_user_info=True):
         partner_details = None
+=======
+    def serialize(self, include_user_info=True, include_branch_name=True):
+        partner_details = None
+        branch_name = None
+>>>>>>> develop
         if include_user_info and self.partner_id:
             partner = Partner.query.get(self.partner_id)
             if partner:
                 partner_details = partner.serialize()
+<<<<<<< HEAD
+=======
+         # Consultar el nombre de la sucursal si include_branch_name es True y si hay un branch_id
+        if include_branch_name and self.branch_id:
+            branch = Branch.query.get(self.branch_id)
+            if branch:
+                branch_name = branch.name
+>>>>>>> develop
 
         return {
             "promotion_id": self.promotion_id,
@@ -44,6 +63,10 @@ class Promotion(db.Model):
             "expiration_date": self.expiration_date.isoformat() if self.expiration_date else None,
             "qr_code": self.qr_code,
             "branch_id": self.branch_id,
+<<<<<<< HEAD
+=======
+            "branch_name": branch_name,
+>>>>>>> develop
             "partner_id": self.partner_id,
             "available_quantity": self.available_quantity,
             "consumed_quantity": self.consumed_quantity,

@@ -2,8 +2,16 @@ from app import db
 from app.models.promotion import Promotion, PromotionImage
 from app.models.category import Category
 from app.common.image_manager import ImageManager
+<<<<<<< HEAD
 from app.models import Promotion, Branch
 from config import Config
+=======
+from app.models import Promotion, Branch, Status 
+from config import Config
+from sqlalchemy.exc import OperationalError
+from sqlalchemy.orm import joinedload
+from time import sleep
+>>>>>>> develop
 
 class PromotionService:
     @staticmethod
@@ -47,11 +55,21 @@ class PromotionService:
         # Procesar y subir cada imagen
         for image_data in images:
             # Generar un nombre de archivo único para cada imagen
+<<<<<<< HEAD
             filename = f"promotions/{new_promotion.promotion_id}/{image_data['filename']}"
             
             # Subir la imagen y obtener la URL pública
             image_url = image_manager.upload_image(image_data['data'], filename)
             
+=======
+            
+            filename = f"promotions/{new_promotion.promotion_id}/{image_data['filename']}"
+            
+            # Subir la imagen y obtener la URL pública
+            category='promotions'
+            
+            image_url = image_manager.upload_image(image_data['data'], filename, category)
+>>>>>>> develop
             # Crear una instancia de PromotionImage y asociarla a la promoción
             new_image = PromotionImage(promotion=new_promotion, image_path=image_url)
             db.session.add(new_image)
@@ -105,7 +123,12 @@ class PromotionService:
                 # Procesar y subir cada nueva imagen
                 for image_data in images:
                     filename = f"promotions/{promotion.promotion_id}/{image_data['filename']}"
+<<<<<<< HEAD
                     image_url = image_manager.upload_image(image_data['data'], filename)
+=======
+                    category='promotions'
+                    image_url = image_manager.upload_image(image_data['data'], filename, category)
+>>>>>>> develop
                     new_image = PromotionImage(promotion_id=promotion_id, image_path=image_url)
                     db.session.add(new_image)
             
@@ -135,6 +158,7 @@ class PromotionService:
         attempt = 0
         while attempt < retries:
             try:
+<<<<<<< HEAD
                 # Intentar obtener todas las promociones
                 return Promotion.query.all()
             except OperationalError as e:
@@ -146,10 +170,46 @@ class PromotionService:
     @staticmethod
     def delete_promotion_images(image_ids):
         # Obtener todas las imágenes por sus IDs
+=======
+                # Filtrar promociones donde el estado no sea "deleted"
+                return (
+                    Promotion.query.join(Status)
+                    .filter(Status.name != 'deleted')
+                    .options(joinedload(Promotion.status))  # Pre-carga la relación status
+                    .all()
+                )
+            except OperationalError as e:
+                attempt += 1
+                print(f"Error de conexión: {e}. Reintentando {attempt}/{retries}...")
+                sleep(delay)  # Esperar antes de reintentar
+        # Lanzar excepción si después de varios intentos no se logra
+        raise OperationalError(f"Fallo después de {retries} intentos")
+    
+    @staticmethod
+    def get_active_promotions(retries=2, delay=3):
+        attempt = 0
+        while attempt < retries:
+            try:
+                return (
+                    Promotion.query.join(Status)
+                    .filter(Status.name == 'active')
+                    .options(joinedload(Promotion.status))
+                    .all()
+                )
+            except OperationalError as e:
+                attempt += 1
+                print(f"Error de conexión: {e}. Reintentando {attempt}/{retries}...")
+                sleep(delay)
+        raise OperationalError(f"Fallo después de {retries} intentos")
+    
+    @staticmethod
+    def delete_promotion_images(image_ids):
+>>>>>>> develop
         images = PromotionImage.query.filter(PromotionImage.image_id.in_(image_ids)).all()
         if images:
             image_manager = ImageManager()
             for image in images:
+<<<<<<< HEAD
                 # Intentar borrar la imagen de Google Cloud Storage
                 try:
                     filename = image.image_path
@@ -162,10 +222,84 @@ class PromotionService:
                 db.session.delete(image)
             
             # Guardar los cambios en la base de datos
+=======
+                try:
+                    filename = image.image_path
+
+                   
+                    relative_path = filename.split('/upload_image/')[1]
+
+                    category = relative_path.split('/')[0]
+                    file_path = relative_path.split(f"{category}/")[1]
+
+                    image_manager.delete_image(file_path, category)
+                except Exception as e:
+                    print(f"Error al eliminar la imagen {filename} del sistema: {e}")
+                db.session.delete(image)
+
+>>>>>>> develop
             db.session.commit()
             return True
         return False
 
     @staticmethod
     def get_promotions_by_partner(partner_id):
+<<<<<<< HEAD
         return Promotion.query.join(Branch).filter(Branch.partner_id == partner_id).all()
+=======
+        return (
+        Promotion.query
+        .join(Branch)
+        .join(Status, Promotion.status_id == Status.id)
+        .filter(
+            Branch.partner_id == partner_id,
+            Status.name != 'deleted' 
+        )
+        .all()
+    )
+    
+    @staticmethod
+    def bulk_update_promotions_status(promotion_ids, status_id):
+        try:
+            promotions = Promotion.query.filter(Promotion.promotion_id.in_(promotion_ids)).all()
+            
+            if not promotions:
+                return None
+
+            for promotion in promotions:
+                promotion.status_id = status_id
+
+            db.session.commit()
+            return promotions
+
+        except Exception as e:
+            print(f"Error al actualizar promociones: {e}")
+            db.session.rollback()
+            return None
+    #eliminar imagenes google storage
+    # @staticmethod
+    # def delete_promotion_images(image_ids):
+    #     images = PromotionImage.query.filter(PromotionImage.image_id.in_(image_ids)).all()
+    #     if images:
+    #         image_manager = ImageManager()
+    #         for image in images:
+    #             # Intentar borrar la imagen del sistema de almacenamiento
+    #             try:
+    #                 filename = image.image_path
+    #                 relative_path = filename.split(f"{Config.GCS_BUCKET_NAME}/")[1]
+
+    #                 # Determinar la categoría a partir de la ruta del archivo
+    #                 category = relative_path.split('/')[0] 
+    #                 file_path = relative_path.split(f"{category}/")[1] 
+
+    #                 # Llamar a la función delete_image con el nombre de archivo y categoría
+    #                 image_manager.delete_image(file_path, category)
+    #             except Exception as e:
+    #                 print(f"Error al eliminar la imagen {filename} del sistema: {e}")
+    #             db.session.delete(image)
+            
+    #         # Guardar los cambios en la base de datos
+    #         db.session.commit()
+    #         return True
+    #     return False
+>>>>>>> develop
