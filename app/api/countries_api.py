@@ -11,18 +11,10 @@ class CountryListResource(Resource):
         countries = CountryCityService.get_all_countries()
         return jsonify([country.serialize() for country in countries])
 
-class CityListByCountryResource(Resource):
+class CityListResource(Resource):
     def get(self, country_id):
-        cities = City.query.filter_by(country_id=country_id).all()
-        if not cities:
-            return jsonify({"error": "No cities found for this country"}), 404
-        return jsonify([{
-            "id": c.id,
-            "name": c.name,
-            "latitude": c.latitude,
-            "longitude": c.longitude
-        } for c in cities])
+        cities = CountryCityService.get_cities_by_country(country_id)
+        return jsonify([city.serialize() for city in cities])
 
-# Agregar las rutas
 api.add_resource(CountryListResource, '/countries')
-api.add_resource(CityListByCountryResource, '/countries/<int:country_id>/cities')
+api.add_resource(CityListResource, '/countries/<int:country_id>/cities')

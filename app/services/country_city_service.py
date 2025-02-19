@@ -89,3 +89,7 @@ class CountryCityService:
     @staticmethod
     def get_all_countries():
         return Country.query.all()
+    
+    @staticmethod
+    def get_cities_by_country(country_id):
+        return City.query.filter_by(country_id=country_id).all()
