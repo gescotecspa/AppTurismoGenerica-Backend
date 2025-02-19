@@ -100,6 +100,8 @@ def create_app():
     from app.api.app_version_api import app_version_api_blueprint
     app.register_blueprint(app_version_api_blueprint)
     
+    from app.api.tourist_point_api import tourist_point_api_blueprint
+    app.register_blueprint(tourist_point_api_blueprint)
     # Importar modelos para asegurarse de que se reconocen al crear la base de datos
     
     from app.models import user, category, tourist, partner, promotion, branch, favorite, funcionality, role_funcionality, user_role, status, promotion_consumed, app_version, country, city
