@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify
 from flask_restful import Api, Resource
 from app.services.country_city_service import CountryCityService
+from app.models import City
 
 countries_api_blueprint = Blueprint('countries_api', __name__)
 api = Api(countries_api_blueprint)
