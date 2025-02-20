@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 import requests
 from app import db
 from app.models import Country, City
+from sqlalchemy import asc
 
 load_dotenv()
 # Cargar las variables de entorno desde el archivo .env
@@ -88,8 +89,8 @@ class CountryCityService:
 
     @staticmethod
     def get_all_countries():
-        return Country.query.all()
+        return Country.query.order_by(asc(Country.name)).all()
     
     @staticmethod
     def get_cities_by_country(country_id):
-        return City.query.filter_by(country_id=country_id).all()
+        return City.query.filter_by(country_id=country_id).order_by(asc(City.name)).all()
