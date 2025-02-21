@@ -18,7 +18,9 @@ class TouristPointService:
             description=data.get('description'),
             latitude=data['latitude'],
             longitude=data['longitude'],
-            status_id=active_status.id
+            status_id=active_status.id,
+            country_id=data.get('country_id'),  # Nuevo campo
+            city_id=data.get('city_id')  # Nuevo campo
         )
         
         db.session.add(tourist_point)
@@ -49,6 +51,8 @@ class TouristPointService:
         tourist_point.description = data.get('description', tourist_point.description)
         tourist_point.latitude = data.get('latitude', tourist_point.latitude)
         tourist_point.longitude = data.get('longitude', tourist_point.longitude)
+        tourist_point.country_id = data.get('country_id', tourist_point.country_id)  # Nuevo campo
+        tourist_point.city_id = data.get('city_id', tourist_point.city_id)  # Nuevo campo
             
         # Agregar nuevas imágenes
         if 'images' in data:

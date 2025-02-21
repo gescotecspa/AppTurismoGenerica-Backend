@@ -51,7 +51,9 @@ class Branch(db.Model):
             "longitude": self.longitude,
             "status": self.status.serialize() if self.status else None,
             "image_url": self.image_url,
-            "average_rating": self.average_rating()
+            "average_rating": self.average_rating(),
+            "country_id": self.country_id,  # Agregado
+            "city_id": self.city_id  # Agregado
         }
 
     def __repr__(self):

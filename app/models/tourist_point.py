@@ -8,6 +8,15 @@ class TouristPoint(db.Model):
     description = db.Column(db.String(1000))
     latitude = db.Column(db.Float, nullable=False)
     longitude = db.Column(db.Float, nullable=False)
+
+    # nuevas columnas con sus claves foráneas
+    country_id = db.Column(db.Integer, db.ForeignKey('countries.id'), nullable=False)
+    city_id = db.Column(db.Integer, db.ForeignKey('cities.id'), nullable=False)
+
+    # Relación con países y ciudades
+    country = db.relationship('Country', backref='tourist_points')
+    city = db.relationship('City', backref='tourist_points')
+
     images = db.relationship('Image', backref='tourist_point', lazy=True)
     ratings = db.relationship('Rating', back_populates='tourist_point', lazy=True)
 
@@ -25,6 +34,10 @@ class TouristPoint(db.Model):
             'description': self.description,
             'latitude': self.latitude,
             'longitude': self.longitude,
+            'country_id': self.country_id,  #country_id en la respuesta
+            'city_id': self.city_id,  #  city_id en la respuesta
+            'country_name': self.country.name if self.country else None,  # nombre del país
+            'city_name': self.city.name if self.city else None,  # ombre de la ciudad
             'images': [image.serialize() for image in self.images],
             'average_rating': average_rating,
             'status': self.status.serialize() if self.status else None
@@ -36,6 +49,7 @@ class Image(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     image_path = db.Column(db.String(255), nullable=False)
     tourist_point_id = db.Column(db.Integer, db.ForeignKey('tourist_points.id'), nullable=False)
+
     def serialize(self):
         return {
             'id': self.id,
@@ -52,12 +66,12 @@ class Rating(db.Model):
     tourist_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp(), nullable=True)
     
-    # Relación con User (tabla 'users')
     tourist = db.relationship('User', backref='ratings')
     tourist_point = db.relationship('TouristPoint', back_populates='ratings', lazy=True) 
+
     status_id = db.Column(db.Integer, db.ForeignKey('statuses.id'), nullable=True)
     status = db.relationship('Status', backref='ratings')
-    
+
     def serialize(self):
         return {
             'id': self.id,
