@@ -9,7 +9,9 @@ def send_email(subject, recipients, html_body, pdf_buffer=None, pdf_filename=Non
     msg['Subject'] = subject
     msg['From'] = current_app.config['SMTP_DEFAULT_SENDER']
     msg['To'] = ", ".join(recipients)
-
+    print(current_app.config['SMTP_DEFAULT_SENDER'])
+    print(current_app.config['SMTP_USERNAME'])
+    print(current_app.config['SMTP_PASSWORD'])
     part1 = MIMEText(html_body, 'html')
     msg.attach(part1)
 

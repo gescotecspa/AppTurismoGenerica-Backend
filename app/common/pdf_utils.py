@@ -18,7 +18,7 @@ def generate_pdf(name, email, user_id):
     c.drawCentredString(width / 2, height - 1 * inch, "Credencial Kupzilla")
 
     # Descargar logo desde URL
-    logo_url = "https://res.cloudinary.com/dbwmesg3e/image/upload/v1738251832/kupzilla/adaptive-icon_csxszn.png"
+    logo_url = "https://res.cloudinary.com/drty9tmty/image/upload/v1740324592/Turismo%20generica/rijzdrnpnnhepp7jucfy.png"
     response = requests.get(logo_url)
     logo_img = Image.open(io.BytesIO(response.content))
     logo_img = logo_img.convert("RGBA")

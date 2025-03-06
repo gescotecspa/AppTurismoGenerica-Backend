@@ -7,6 +7,7 @@ from config import Config
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import joinedload
 from time import sleep
+from sqlalchemy import func
 
 class PromotionService:
     @staticmethod
@@ -67,7 +68,7 @@ class PromotionService:
         return new_promotion
 
     @staticmethod
-    def update_promotion(promotion_id, title=None, description=None, start_date=None, expiration_date=None, qr_code=None, discount_percentage=None, available_quantity=None, partner_id=None, branch_id=None, category_ids=None, images=None, status_id=None):
+    def update_promotion(promotion_id, title=None, description=None, start_date=None, expiration_date=None, qr_code=None, discount_percentage=None, available_quantity=None, partner_id=None, branch_id=None, category_ids=None, images=None, status_id=None, main_image_id=None):
         # Obtener la promoción existente
         promotion = PromotionService.get_promotion_by_id(promotion_id)
         if promotion:
@@ -114,6 +115,23 @@ class PromotionService:
                     image_url = image_manager.upload_image(image_data['data'], filename, category)
                     new_image = PromotionImage(promotion_id=promotion_id, image_path=image_url)
                     db.session.add(new_image)
+                    
+            # Marcar la imagen principal si se proporciona un ID válido
+            if main_image_id is not None:
+                # Verificar que la imagen exista y pertenezca a la promoción
+                main_image = PromotionImage.query.filter_by(
+                    image_id=main_image_id,
+                    promotion_id=promotion_id
+                ).first()
+
+                if not main_image:
+                    raise ValueError("La imagen principal no existe o no pertenece a esta promoción")
+
+                # Desmarcar la imagen principal actual (si existe)
+                PromotionImage.query.filter_by(promotion_id=promotion_id, is_main=True).update({"is_main": False})
+
+                # Marcar la nueva imagen principal
+                main_image.is_main = True
             
             # Guardar todos los cambios en la base de datos
             db.session.commit()
@@ -227,6 +245,28 @@ class PromotionService:
             print(f"Error al actualizar promociones: {e}")
             db.session.rollback()
             return None
+        
+    @staticmethod
+    def get_active_promotions_by_city(city_id):
+        # Obtener el status activo desde la tabla 'statuses'
+        active_status = Status.query.filter_by(name='active').first()  # Asumimos que 'active' es el nombre del estado
+
+        if not active_status:
+            return None
+        
+        # Obtener las sucursales de la ciudad
+        branches = Branch.query.filter_by(city_id=city_id).all()
+        
+        if not branches:
+            return None
+        
+        # Filtrar las promociones activas vinculadas a esas sucursales
+        active_promotions = Promotion.query.filter(
+            Promotion.branch_id.in_([branch.branch_id for branch in branches]),
+            Promotion.status_id == active_status.id,
+            Promotion.expiration_date >= func.current_date() 
+        ).all()
+        return active_promotions
     #eliminar imagenes google storage
     # @staticmethod
     # def delete_promotion_images(image_ids):
