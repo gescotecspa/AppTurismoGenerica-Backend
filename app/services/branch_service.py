@@ -30,8 +30,8 @@ class BranchService:
             longitude=longitude,
             status_id=status_id,
             image_url=image_url,
-            country_id=data.get("country_id"),  # Agregado
-            city_id=data.get("city_id")  # Agregado
+            country_id=country_id,
+            city_id=city_id
         )
         db.session.add(new_branch)
         db.session.commit()

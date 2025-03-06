@@ -23,6 +23,8 @@ class Branch(db.Model):
     ratings = db.relationship('BranchRating', back_populates='branch', lazy=True)
     country_id = db.Column(db.Integer, db.ForeignKey('countries.id'), nullable=False)
     city_id = db.Column(db.Integer, db.ForeignKey('cities.id'), nullable=False)
+    country = db.relationship('Country', backref='branches')
+    city = db.relationship('City', backref='branches')
     
     def average_rating(self):
         # Calcular el promedio de las calificaciones de esta sucursal
@@ -52,8 +54,8 @@ class Branch(db.Model):
             "status": self.status.serialize() if self.status else None,
             "image_url": self.image_url,
             "average_rating": self.average_rating(),
-            "country_id": self.country_id,  # Agregado
-            "city_id": self.city_id  # Agregado
+            "country": self.country.serialize() if self.country else None,
+            "city": self.city.serialize() if self.city else None
         }
 
     def __repr__(self):

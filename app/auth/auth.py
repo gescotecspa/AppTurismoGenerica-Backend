@@ -199,12 +199,7 @@ def get_all_users(current_user=None):
 @auth_blueprint.route('/user/<int:user_id>', methods=['PUT'])
 @token_required
 def update_user(current_user, user_id):
-    """
-    Si token_required = "false" en .env, este endpoint igual permite "pasar sin token"???
-    - Con esta configuración actual, sí. Depende de lo que quieras hacer.
-    - Si deseas forzar el token para ciertos endpoints aunque el .env diga "false",
-      deberías cambiar la lógica o tener otro decorador.
-    """
+
     if current_user is None:
         # Lógica si se permite sin token (solo cuando .env="false")
         return {"message": "No tienes token para actualizar usuario."}, 403
