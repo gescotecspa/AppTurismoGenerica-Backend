@@ -97,18 +97,24 @@ class AllPromotionsResourceVersioned(Resource):
 class PromotionByCityResource(Resource):
     @token_required
     def get(self, current_user, city_id=None):
-        if city_id:
-            # Obtener promociones activas para la ciudad específica
-            promotions = PromotionService.get_active_promotions_by_city(city_id)
-        else:
-            # Obtener todas las promociones activas
-            promotions = PromotionService.get_active_promotions()
+        try:
+            if city_id:
+                # Obtener promociones activas para la ciudad específica
+                promotions = PromotionService.get_active_promotions_by_city(city_id)
+            else:
+                # Obtener todas las promociones activas
+                promotions = PromotionService.get_active_promotions()
 
-        # Si no hay promociones activas
-        if not promotions:
-            return {'message': 'No active promotions found.'}, 404
+            # Si el servicio devuelve un error o promociones vacías
+            if promotions is None:
+                return {'message': 'Error retrieving promotions'}, 500  # Error en el servicio
+            elif isinstance(promotions, list) and not promotions:
+                return jsonify([])  # Devolver un arreglo vacío si no hay promociones
 
-        return jsonify([promotion.serialize(include_user_info=False, include_branch_name=True) for promotion in promotions])
+            return jsonify([promotion.serialize(include_user_info=False, include_branch_name=True) for promotion in promotions])
+
+        except Exception as e:
+            return {'message': f'An error occurred: {str(e)}'}, 500  # Error genérico en el servidor
 
 api.add_resource(PromotionResource, '/promotions/<int:promotion_id>')
 api.add_resource(PromotionImageResource, '/promotion_images/delete')
