@@ -258,7 +258,7 @@ class PromotionService:
         branches = Branch.query.filter_by(city_id=city_id).all()
         
         if not branches:
-            return None
+            return []
         
         # Filtrar las promociones activas vinculadas a esas sucursales
         active_promotions = Promotion.query.filter(
