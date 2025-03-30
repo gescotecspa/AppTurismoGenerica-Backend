@@ -10,7 +10,7 @@ from functools import wraps
 from werkzeug.security import generate_password_hash, check_password_hash
 from ..models.user import User
 from ..services.user_service import UserService
-from ..common.email_utils import send_email
+from ..common.email_utils import send_email, send_email_reset_password
 from datetime import datetime, timedelta, timezone
 import os
 from app import db
@@ -199,7 +199,12 @@ def get_all_users(current_user=None):
 @auth_blueprint.route('/user/<int:user_id>', methods=['PUT'])
 @token_required
 def update_user(current_user, user_id):
-
+    """
+    Si token_required = "false" en .env, este endpoint igual permite "pasar sin token"???
+    - Con esta configuración actual, sí. Depende de lo que quieras hacer.
+    - Si deseas forzar el token para ciertos endpoints aunque el .env diga "false",
+      deberías cambiar la lógica o tener otro decorador.
+    """
     if current_user is None:
         # Lógica si se permite sin token (solo cuando .env="false")
         return {"message": "No tienes token para actualizar usuario."}, 403
@@ -231,12 +236,12 @@ def reset_password_request():
     user.reset_code_expiration = datetime.utcnow() + timedelta(hours=1)
     db.session.commit()
 
-    reset_url = "https://kupzilla.com/reset_password"
+    reset_url = "https://www.kupzilla.com/reset_password"
     subject = "Recuperación de contraseña - Kupzilla"
     recipients = [email]
     html_body = render_template('email/reset_password.html', reset_code=reset_code, reset_url=reset_url)
 
-    send_email(subject, recipients, html_body)
+    email_sent = send_email_reset_password(subject, recipients, user.first_name, email, reset_code)
 
     return jsonify({'message': 'Password reset email sent'}), 200
 

@@ -4,7 +4,7 @@ from app.models.user import User
 from app import db
 from sqlalchemy.exc import IntegrityError
 from werkzeug.security import generate_password_hash, check_password_hash
-from ..common.email_utils import send_email
+from ..common.email_utils import send_email, send_email_partner
 from flask import render_template
 from ..common.pdf_utils import generate_pdf
 from ..common.image_manager import ImageManager
@@ -60,14 +60,14 @@ class UserService:
             raise ValueError("No terms and conditions available.")
 
         # Buscar el país usando el ID
-        country_obj = Country.query.get(country)  # Usamos 'get' para obtener el objeto por ID
+        country_obj = Country.query.get(country)
         if not country_obj:
             raise ValueError("Invalid country ID provided.")
         
         # Buscar la ciudad usando el ID
         city_obj = None
         if city:
-            city_obj = City.query.get(city)  # Usamos 'get' para obtener el objeto por ID
+            city_obj = City.query.get(city)
             if not city_obj:
                 raise ValueError("Invalid city ID provided.")
         
@@ -99,7 +99,7 @@ class UserService:
             subject = "Bienvenido a nuestra aplicación! MyApp"
             recipients = [email]
             html_body = render_template('email/welcome_email.html', email=email, first_name=first_name)
-            send_email(subject, recipients, html_body, pdf_buffer, pdf_filename)
+            send_email(subject, recipients, first_name, email, pdf_buffer, pdf_filename)
 
         except IntegrityError:
             db.session.rollback()
@@ -240,7 +240,7 @@ class UserService:
             subject = "Bienvenido a nuestra aplicación! KuplizzApp"
             recipients = [email]
             html_body = render_template('email/welcome_email_partner.html', email=email, first_name=first_name, password=password )
-            send_email(subject, recipients, html_body)
+            send_email_partner(subject, recipients, first_name, email, password)
 
         except IntegrityError:
             db.session.rollback()

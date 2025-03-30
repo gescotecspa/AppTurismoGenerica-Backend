@@ -19,6 +19,7 @@ class Config:
     SMTP_PASSWORD = os.getenv('SMTP_PASSWORD')
     SMTP_DEFAULT_SENDER = os.getenv('SMTP_DEFAULT_SENDER')
     GCS_BUCKET_NAME = os.getenv('GCS_BUCKET_NAME', 'Kupzilla-App')
+    SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY')
     
     # GOOGLE_CREDENTIALS = {
     #     "type": os.getenv('GCP_TYPE'),
