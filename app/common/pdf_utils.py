@@ -1,4 +1,5 @@
 import io
+import os
 import qrcode
 import requests
 from PIL import Image
@@ -15,16 +16,22 @@ def generate_pdf(name, email, user_id):
 
     # Añadir título
     c.setFont("Helvetica-Bold", 20)
-    c.drawCentredString(width / 2, height - 1 * inch, "Credencial Kupzilla")
+    c.drawCentredString(width / 2, height - 1 * inch, "Credencial AppGenérica")
 
-    # Descargar logo desde URL
-    logo_url = "https://res.cloudinary.com/drty9tmty/image/upload/v1740324592/Turismo%20generica/rijzdrnpnnhepp7jucfy.png"
-    response = requests.get(logo_url)
-    logo_img = Image.open(io.BytesIO(response.content))
-    logo_img = logo_img.convert("RGBA")
-    white_bg = Image.new("RGBA", logo_img.size, "WHITE")
-    white_bg.paste(logo_img, (0, 0), logo_img)
-    logo_img = white_bg.convert("RGB")
+    # Descargar logo desde URL con manejo de errores
+    logo_path = os.path.join(os.path.dirname(__file__), "logo.png")
+
+    try:
+        # Intentar abrir la imagen local
+        logo_img = Image.open(logo_path)
+        logo_img = logo_img.convert("RGBA")
+        white_bg = Image.new("RGBA", logo_img.size, "WHITE")
+        white_bg.paste(logo_img, (0, 0), logo_img)
+        logo_img = white_bg.convert("RGB")
+    except requests.exceptions.RequestException as e:
+        print(f"Error al descargar el logo: {e}")
+        # Usar una imagen predeterminada si no se puede descargar el logo
+        logo_img = Image.new("RGB", (200, 100), color=(255, 255, 255))
 
     # Añadir recuadro tipo tarjeta
     card_x = 0.75 * inch
@@ -37,7 +44,7 @@ def generate_pdf(name, email, user_id):
 
     # Añadir logo alineado a la izquierda dentro de la tarjeta
     logo_width = 2 * inch
-    logo_height = 0.8 * inch
+    logo_height = 2 * inch
     logo_x = card_x + 0.5 * inch
     logo_y = card_y + card_height - logo_height - 0.5 * inch
     c.drawInlineImage(logo_img, logo_x, logo_y, logo_width, logo_height)

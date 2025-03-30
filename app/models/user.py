@@ -36,6 +36,7 @@ class User(db.Model):
     app_version = db.Column(db.String(20), nullable=True)  # Versión de la app
     platform = db.Column(db.String(50), nullable=True)     # ej. Android, iOS
     last_login_at = db.Column(db.DateTime, nullable=True)
+    registration_date = db.Column(db.DateTime, nullable=True, default=datetime.utcnow)
     
     def serialize(self):
         local_tz = pytz.timezone('America/Santiago')
@@ -64,4 +65,5 @@ class User(db.Model):
             'app_version': self.app_version,
             'platform': self.platform,
             'last_login_at': self.last_login_at.strftime('%Y-%m-%dT%H:%M:%S %z') if self.last_login_at else None,
+            'user_registration_date': self.registration_date.strftime('%Y-%m-%dT%H:%M:%S %z') if self.registration_date else None
         }
