@@ -114,7 +114,24 @@ class PromotionByCityResource(Resource):
             return jsonify([promotion.serialize(include_user_info=False, include_branch_name=True) for promotion in promotions])
 
         except Exception as e:
-            return {'message': f'An error occurred: {str(e)}'}, 500  # Error genérico en el servidor
+            return {'message': f'An error occurred: {str(e)}'}, 500 
+        
+class ActivePromotionsByCountryResource(Resource):
+    @token_required
+    def get(self, current_user, country_id):
+        try:
+            # Obtener promociones activas por país
+            active_promotions = PromotionService.get_active_promotions_by_country(country_id)
+
+            if active_promotions is None:
+                return {'message': 'Error retrieving active promotions'}, 500  # Error en el servicio
+            elif not active_promotions:
+                return jsonify([])  # Devolver un arreglo vacío si no hay promociones activas
+
+            return jsonify([promotion.serialize(include_user_info=False, include_branch_name=True) for promotion in active_promotions])
+
+        except Exception as e:
+            return {'message': f'An error occurred: {str(e)}'}, 500        
 
 api.add_resource(PromotionResource, '/promotions/<int:promotion_id>')
 api.add_resource(PromotionImageResource, '/promotion_images/delete')
@@ -124,3 +141,4 @@ api.add_resource(PromotionListResource, '/promotions') # Ruta para promociones a
 api.add_resource(ActivePromotionsResource, '/<string:version>/promotions/active')  # Ruta para promociones activas (turistas)
 api.add_resource(AllPromotionsResourceVersioned, '/<string:version>/promotions')  # Ruta versionada para todas las promociones sin branch details
 api.add_resource(PromotionByCityResource, '/promotions/cities', '/promotions/cities/<int:city_id>')
+api.add_resource(ActivePromotionsByCountryResource, '/promotions/countries/<int:country_id>')

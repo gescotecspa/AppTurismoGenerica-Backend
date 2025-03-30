@@ -248,24 +248,40 @@ class PromotionService:
         
     @staticmethod
     def get_active_promotions_by_city(city_id):
-        # Obtener el status activo desde la tabla 'statuses'
-        active_status = Status.query.filter_by(name='active').first()  # Asumimos que 'active' es el nombre del estado
-
+        active_status = Status.query.filter_by(name='active').first()  
         if not active_status:
             return None
         
-        # Obtener las sucursales de la ciudad
         branches = Branch.query.filter_by(city_id=city_id).all()
         
         if not branches:
             return []
         
-        # Filtrar las promociones activas vinculadas a esas sucursales
         active_promotions = Promotion.query.filter(
             Promotion.branch_id.in_([branch.branch_id for branch in branches]),
             Promotion.status_id == active_status.id,
             Promotion.expiration_date >= func.current_date() 
         ).all()
+        return active_promotions
+    
+    @staticmethod
+    def get_active_promotions_by_country(country_id):
+        active_status = Status.query.filter_by(name='active').first()
+
+        if not active_status:
+            return None
+        
+        branches = Branch.query.filter_by(country_id=country_id).all()
+        
+        if not branches:
+            return []
+        
+        active_promotions = Promotion.query.filter(
+            Promotion.branch_id.in_([branch.branch_id for branch in branches]),
+            Promotion.status_id == active_status.id,
+            Promotion.expiration_date >= func.current_date()  # Aseguramos que la fecha de expiración sea posterior a la fecha actual
+        ).all()
+        
         return active_promotions
     #eliminar imagenes google storage
     # @staticmethod
